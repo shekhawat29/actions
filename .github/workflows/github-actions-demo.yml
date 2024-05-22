@@ -20,7 +20,7 @@ jobs:
       - name: Create Azure Storage Account
         run: |
           az storage account create \
-            --name mystorageaccount \
+            --name mystorageac18324count \
             --resource-group datta-test \
             --location centralindia \
             --sku Standard_LRS
@@ -34,7 +34,7 @@ jobs:
       - name: Get Storage Account Key
         id: get_storage_key
         run: |
-          storage_key=$(az storage account keys list --resource-group datta-test --account-name mystorageaccount --query '[0].value' --output tsv)
+          storage_key=$(az storage account keys list --resource-group datta-test --account-name mystorageac18324count --query '[0].value' --output tsv)
           echo "::set-output name=storage_key::$storage_key"
 
       - name: Build and deploy Container App
@@ -46,7 +46,7 @@ jobs:
           containerAppEnvironment: my-environment
           azureFileVolume: |
             name: myazurefile
-            storageAccountName: mystorageaccount
+            storageAccountName: mystorageac18324count
             storageAccountKey: ${{ steps.get_storage_key.outputs.storage_key }}
             shareName: myfileshare
             mountPath: /var/jenkins_home
