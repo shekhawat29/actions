@@ -1,0 +1,53 @@
+name: Azure Container Apps Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Create Azure Storage Account
+        run: |
+          az storage account create \
+            --name mystorageaccount \
+            --resource-group datta-test \
+            --location centralindia \
+            --sku Standard_LRS
+
+      - name: Create Azure File Share
+        run: |
+          az storage share create \
+            --name myfileshare \
+            --account-name mystorageaccount
+
+      - name: Get Storage Account Key
+        id: get_storage_key
+        run: |
+          storage_key=$(az storage account keys list --resource-group datta-test --account-name mystorageaccount --query '[0].value' --output tsv)
+          echo "::set-output name=storage_key::$storage_key"
+
+      - name: Build and deploy Container App
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          containerAppName: my-container-app
+          resourceGroup: my-container-app-rg
+          imageToDeploy: jenkins/jenkins:lts-jdk17
+          containerAppEnvironment: my-environment
+          azureFileVolume: |
+            name: myazurefile
+            storageAccountName: mystorageaccount
+            storageAccountKey: ${{ steps.get_storage_key.outputs.storage_key }}
+            shareName: myfileshare
+            mountPath: /var/jenkins_home
+
