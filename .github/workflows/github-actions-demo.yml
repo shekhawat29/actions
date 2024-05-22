@@ -41,7 +41,7 @@ jobs:
         uses: azure/container-apps-deploy-action@v1
         with:
           containerAppName: my-container-app
-          resourceGroup: my-container-app-rg
+          resourceGroup: datta-test
           imageToDeploy: jenkins/jenkins:lts-jdk17
           containerAppEnvironment: my-environment
           azureFileVolume: |
