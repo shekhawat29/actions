@@ -29,7 +29,7 @@ jobs:
         run: |
           az storage share create \
             --name myfileshare \
-            --account-name mystorageaccount
+            --account-name mystorageac18324count
 
       - name: Get Storage Account Key
         id: get_storage_key
