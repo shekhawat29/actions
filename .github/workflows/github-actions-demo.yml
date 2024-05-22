@@ -38,16 +38,11 @@ jobs:
           echo "::set-output name=storage_key::$storage_key"
 
       - name: Build and deploy Container App
-        uses: azure/container-apps-deploy-action@v1
-        with:
-          containerAppName: my-container-app
-          resourceGroup: datta-test
-          imageToDeploy: jenkins/jenkins:lts-jdk17
-          containerAppEnvironment: my-environment
-          azureFileVolume: |
-            name: myazurefile
-            storageAccountName: mystorageac18324count
-            storageAccountKey: ${{ steps.get_storage_key.outputs.storage_key }}
-            shareName: myfileshare
-            mountPath: /var/jenkins_home
-
+        run: |
+          az containerapp create \
+            --name my-container-app \
+            --resource-group datta-test \
+            --environment my-environment \
+            --image jenkins/jenkins:lts-jdk17 \
+            --env-vars AZURE_STORAGE_ACCOUNT=mystorageaccount AZURE_STORAGE_KEY=${{ steps.get_storage_key.outputs.storage_key }} \
+            --volume-mount name=myazurefile storage-account-name=mystorageac18324count storage-account-key=${{ steps.get_storage_key.outputs.storage_key }} share-name=myfileshare mount-path=/var/jenkins_home
